@@ -1,8 +1,0 @@
-{
-    "ROS2.distro": "jazzy",
-    "python.autoComplete.extraPaths": [
-        "/home/shikha/ros2_ws/build/obstacle_avoidance",
-        "/home/shikha/ros2_ws/install/obstacle_avoidance/lib/python3.12/site-packages",
-        "/opt/ros/jazzy/lib/python3.12/site-packages"
-    ]
-}
