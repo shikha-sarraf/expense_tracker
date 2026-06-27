@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models/expense.dart';
+import 'widgets/expenses_screen.dart';
 
 void main() {
   final testExpenses = [
@@ -22,9 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Expense Tracker',
-      home: Scaffold(
-        body: Center(child: Text('Expense Tracker')),
-      ),
+      home: ExpensesScreen(),
     );
   }
 }
