@@ -37,8 +37,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         itemBuilder:(context, index) {
           return Card(
             child:ListTile(
-              title: Text(_expenses[index].title),
-              trailing:Text('\$${_expenses[index].amount}'),
+              title: Text(_expenses[index].title),          // line 34
+              subtitle: Text('${_expenses[index].category.name} • ${_expenses[index].date.day}/${_expenses[index].date.month}/${_expenses[index].date.year}'),  // ADD THIS LINE 35
+              trailing:Text('\$${_expenses[index].amount}'), // line 36
             ),
           );
         },

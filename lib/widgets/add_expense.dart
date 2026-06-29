@@ -22,9 +22,10 @@ class _AddExpenseState extends State<AddExpense>{
   }
 
   void _saveExpense(){
-    final title =_titleController.text;
+    final title = _titleController.text;
     final amount = double.tryParse(_amountController.text);
-    if(title.isEmpty || amount == null){
+    
+    if(title.isEmpty || amount == null || _selectedDate == null){
       return;
     }
 
@@ -32,11 +33,36 @@ class _AddExpenseState extends State<AddExpense>{
       Expense(
         title: title,
         amount: amount,
-        date: DateTime.now(),
-        category: Category.other,
+        date: _selectedDate!,  // ← use selected date
+        category: _selectedCategory,
       ),
     );
     Navigator.pop(context);
+  }
+
+  
+
+  Category _selectedCategory = Category.food;
+
+  void _onCategoryChanged(Category? value) {
+    if (value== null) return;
+    setState((){
+      _selectedCategory =value;
+    });
+  }
+
+  DateTime? _selectedDate;
+
+  void _openDatePicker() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2024),
+      lastDate: DateTime.now(),
+    );
+    setState(() {
+      _selectedDate = pickedDate;
+    });
   }
 
   @override
@@ -54,6 +80,27 @@ class _AddExpenseState extends State<AddExpense>{
             decoration: InputDecoration(label: Text('Amount')),
             keyboardType: TextInputType.number,
           ),
+
+          DropdownButton<Category>(
+            value: _selectedCategory,
+            items: Category.values.map((category) =>
+              DropdownMenuItem(
+                value: category,
+                child: Text(category.name),
+              )
+            ).toList(),
+            onChanged: _onCategoryChanged,
+          ),
+
+          TextButton(
+            onPressed: _openDatePicker,
+            child: Text(
+              _selectedDate == null
+                ? 'Select Date'
+                : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
+            ),
+          ),
+
           Row(
             children:[
               ElevatedButton(
