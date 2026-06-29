@@ -1,1 +1,1 @@
-# Expense Tracker
+Flutter expense tracker - learning project
