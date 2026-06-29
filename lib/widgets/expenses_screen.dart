@@ -28,21 +28,46 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 
+  void _removeExpense(Expense expense) {
+    setState((){
+      _expenses.remove(expense);
+    });
+  }
+
   @override
   Widget build(BuildContext context){
+    final totalAmount = _expenses.fold(0.0, (sum, expense) => sum + expense.amount);
     return Scaffold(
       appBar: AppBar(title:Text('Expenses')),
-      body: ListView.builder(
-        itemCount: _expenses.length,
-        itemBuilder:(context, index) {
-          return Card(
-            child:ListTile(
-              title: Text(_expenses[index].title),          // line 34
-              subtitle: Text('${_expenses[index].category.name} • ${_expenses[index].date.day}/${_expenses[index].date.month}/${_expenses[index].date.year}'),  // ADD THIS LINE 35
-              trailing:Text('\$${_expenses[index].amount}'), // line 36
+      body: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('Total: \$$totalAmount'),
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _expenses.length,
+              itemBuilder: (context, index) {
+                return Dismissible(
+                  key: ValueKey(_expenses[index].id),
+                  onDismissed: (direction) {
+                    _removeExpense(_expenses[index]);
+                  },
+                  child: Card(
+                    child: ListTile(
+                      title: Text(_expenses[index].title),
+                      subtitle: Text('${_expenses[index].category.name} • ${_expenses[index].date.day}/${_expenses[index].date.month}/${_expenses[index].date.year}'),
+                      trailing: Text('\$${_expenses[index].amount}'),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddExpenseOverlay,
