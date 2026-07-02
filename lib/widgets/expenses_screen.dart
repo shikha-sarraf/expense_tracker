@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/expense.dart';
 import '../widgets/add_expense.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen ({super.key});
@@ -16,9 +18,27 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     Expense(title:'bus ticket',amount:2.0, date: DateTime.now(), category: Category.transport),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadExpenses();
+  }
+  void _loadExpenses() async {
+    final prefs = await SharedPreferences.getInstance();
+    final expensesString = prefs.getString('expenses');
+    if (expensesString == null) return;
+
+    final List decoded = jsonDecode(expensesString);
+    setState(() {
+      _expenses.clear();
+      _expenses.addAll(decoded.map((e) => Expense.fromJson(e)));
+    });
+  }
+
   void _addNewExpense(Expense expense) {
     setState((){
       _expenses.add(expense);
+      _saveExpenses();
     });
   }
   void _openAddExpenseOverlay(){
@@ -33,6 +53,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     setState(() {
       _expenses.remove(expense);
     });
+    _saveExpenses();
+
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -44,11 +66,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             setState(() {
               _expenses.insert(expenseIndex, expense);
             });
+            _saveExpenses();
           },
         ),
       ),
     );
   }
+
+  void _saveExpenses() async {
+  final prefs = await SharedPreferences.getInstance();
+  final expensesJson = _expenses.map((e) => e.toJson()).toList();
+  prefs.setString('expenses', jsonEncode(expensesJson));
+}
 
   @override
   Widget build(BuildContext context){
